@@ -20,13 +20,17 @@ WizardBank is a premium, full-stack Banking Management System built with **Sprin
 
 ## 📸 Project Preview
 
-> **Note**: I couldn't generate actual screenshots due to quota limits, but here's how the UI is designed:
+| Landing Page | Login Page |
+|--------------|------------|
+| ![Landing Page](screenshots/landing_page.png) | ![Login Page](screenshots/login_page.png) |
 
-The application features a **Glassmorphic emerald and gold theme**.
+| Register Page | Create Account |
+|---------------|----------------|
+| ![Register Page](screenshots/register_page.png) | ![Create Account](screenshots/create_account.png) |
 
-- **Dashboard**: A sleek dark landing page with a central welcome card.
-- **Bank Card UI**: Virtual credit card style display for account details.
-- **Interactive Forms**: Responsive and animated login/registration forms.
+| Account Details |
+|-----------------|
+| ![Account Details](screenshots/account_details.png) |
 
 ## 🛠️ Installation & Setup
 
