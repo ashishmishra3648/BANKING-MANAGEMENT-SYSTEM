@@ -23,18 +23,36 @@ public class AccountsController {
             if (!userRepo.existsById(account.getEmail())) {
                 return ResponseEntity.badRequest().body(Collections.singletonMap("error", "User not found. Please register first."));
             }
-            if (account.getCvv() == null || account.getCvv().isEmpty()) {
-                // Generate random 3-digit CVV
-                int cvv = 100 + (int)(Math.random()*900);
-                account.setCvv(String.valueOf(cvv));
+
+            // Validate Security PIN (4-6 digits)
+            if (account.getSecurity_pin() == null || !account.getSecurity_pin().matches("\\d{4,6}")) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Security PIN must be 4 to 6 digits."));
             }
-            if (account.getExpiryDate() == null || account.getExpiryDate().isEmpty()) {
-                // Expiry 5 years from now, MM/YY
-                java.time.LocalDate now = java.time.LocalDate.now();
-                java.time.LocalDate expiry = now.plusYears(5);
-                String expiryFormatted = String.format("%02d/%02d", expiry.getMonthValue(), expiry.getYear()%100);
-                account.setExpiryDate(expiryFormatted);
-            }
+
+            // Generate Unique 10-digit Account Number
+            // Range: 1,000,000,000 to 9,999,999,999
+            long accountNumber;
+            do {
+                accountNumber = 1_000_000_000L + (long)(Math.random() * 9_000_000_000L);
+            } while (accountsRepo.existsById(accountNumber));
+            account.setAccount_number(accountNumber);
+
+            // Generate Unique 3-digit CVV
+            String cvv;
+            int attempts = 0;
+            do {
+                if(attempts++ > 2000) throw new RuntimeException("Cannot generate unique CVV, limit reached.");
+                int randomCvv = 100 + (int)(Math.random() * 900); // 100 to 999
+                cvv = String.valueOf(randomCvv);
+            } while (accountsRepo.existsByCvv(cvv));
+            account.setCvv(cvv);
+
+            // Set Expiry Date (5 years from now)
+            java.time.LocalDate now = java.time.LocalDate.now();
+            java.time.LocalDate expiry = now.plusYears(5);
+            String expiryFormatted = String.format("%02d/%02d", expiry.getMonthValue(), expiry.getYear() % 100);
+            account.setExpiryDate(expiryFormatted);
+
             Accounts savedAccount = accountsRepo.save(account);
             return ResponseEntity.ok(savedAccount);
         } catch (Exception e) {

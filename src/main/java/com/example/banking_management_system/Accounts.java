@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @Table(name = "accounts")
 public class Accounts {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long account_number;
 
     private String full_name;
