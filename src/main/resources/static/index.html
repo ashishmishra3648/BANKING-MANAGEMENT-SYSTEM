@@ -231,38 +231,69 @@
         }
 
         .account-card {
-            background: linear-gradient(135deg, #064e3b 0%, #0a3d2e 100%);
-            color: #fff;
-            padding: 1.75rem;
-            border-radius: 16px;
-            margin: 1.5rem auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            position: relative;
-            overflow: hidden;
+            perspective: 1000px;
             width: 85%;
             max-width: 400px;
-            transition: all 0.3s ease;
-            animation: cardFloat 0.6s ease;
+            height: 260px;
+            margin: 1.5rem auto;
+            background: transparent;
+            position: relative;
+            z-index: 1;
         }
 
-        @keyframes cardFloat {
-            from {
-                opacity: 0;
-                transform: translateY(20px) rotateX(10deg);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) rotateX(0);
-            }
+        .account-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
-        .account-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+        .account-card-inner.flipped {
+            transform: rotateY(180deg);
         }
 
-        .account-card::before {
+        /* Fix for button clickability */
+        .account-card-inner.flipped .account-card-front {
+            pointer-events: none;
+        }
+
+        .account-card-inner.flipped .account-card-back {
+            pointer-events: auto;
+        }
+
+        .account-card-inner:not(.flipped) .account-card-back {
+            pointer-events: none;
+        }
+
+        .account-card-front,
+        .account-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 1.75rem;
+            background: linear-gradient(135deg, #064e3b 0%, #0a3d2e 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .account-card-back {
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .account-card-front::before,
+        .account-card-back::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -271,6 +302,38 @@
             height: 200%;
             background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(16, 185, 129, 0.1) 50%, transparent 70%);
             animation: rotate 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card-content-wrapper {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* justify-content: space-between; Removed for custom spacing */
+        }
+
+        .flip-btn {
+            background: var(--accent-gold);
+            border: none;
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .flip-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1);
         }
 
         @keyframes rotate {
@@ -286,7 +349,8 @@
         .card-header {
             display: flex;
             align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
+            /* Reduced from 1.5rem */
             position: relative;
             z-index: 1;
         }
@@ -330,6 +394,8 @@
             align-items: flex-end;
             position: relative;
             z-index: 1;
+            margin-top: auto;
+            /* Push footer to bottom */
         }
 
         .card-holder-label {
@@ -644,215 +710,43 @@
 
             <div id="accountDisplay" class="hidden">
                 <div class="account-card">
-                    <div class="card-header">
-                        <div class="card-logo">WB</div>
-                        <div class="card-brand">WizardBank</div>
-                    </div>
-
-                    <div class="card-number" id="disp_acc_number">#### #### #### ####</div>
-
-                    <div class="card-footer">
-                        <div>
-                            <div class="card-holder-label">Card Holder Name</div>
-                            <div class="card-holder-name" id="disp_name">NAME HERE</div>
+                    <div class="account-card-inner" id="cardInner">
+                        <div class="account-card-front">
+                            <div class="card-content-wrapper">
+                                <div class="card-header">
+                                    <div class="card-logo">WB</div>
+                                    <div class="card-brand">WizardBank</div>
+                                </div>
+                                <div class="card-number" id="disp_acc_number">#### #### #### ####</div>
+                                <div class="card-footer" style="padding-top: 0; display: block;">
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <div class="card-holder-label">Card Holder Name</div>
+                                        <div class="card-holder-name" id="disp_name">NAME HERE</div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                        <button class="flip-btn show-btn" onclick="toggleCVV(event)"
+                                            style="margin-bottom: 4px;">Show CVV</button>
+                                        <i class="bi bi-credit-card"
+                                            style="font-size: 2rem; color: var(--accent-gold);"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <i class="bi bi-credit-card" style="font-size: 2rem; color: var(--accent-gold);"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="balance-box">
-                    <div class="balance-label">
-                        <i class="bi bi-wallet2"></i> Available Balance
-                    </div>
-                    <div class="balance-amount" id="disp_balance">$0.00</div>
-                </div>
-
-                <div class="details-list">
-                    <div class="detail-row">
-                        <span class="detail-label">
-                            <i class="bi bi-envelope"></i> Email
-                        </span>
-                        <span class="detail-value" id="disp_email">-</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">
-                            <i class="bi bi-shield-check"></i> Status
-                        </span>
-                        <span class="status-badge">
-                            <i class="bi bi-check-circle"></i> Active
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showPage('welcome')">
-                    <i class="bi bi-house-door"></i> Home
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i> Login
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showPage('register')">
-                    <i class="bi bi-person-plus"></i> Register
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showPage('account')">
-                    <i class="bi bi-wallet2"></i> Create Account
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" onclick="showPage('details')">
-                    <i class="bi bi-card-list"></i> Account Details
-                </a>
-            </li>
-            </ul>
-        </div>
-    </div>
-    </nav>
-
-    <div id="alertContainer" class="alert-container"></div>
-
-    <div class="main-container">
-        <div id="welcomeSection" class="content-card welcome-section">
-            <i class="bi bi-bank2 welcome-icon"></i>
-            <h2>Welcome to WizardBank</h2>
-            <p>Your trusted partner in modern banking solutions. Experience secure, fast, and reliable banking services
-                at your fingertips.</p>
-            <div class="mt-4">
-                <button class="btn btn-primary w-100 mb-2" onclick="showPage('login')">
-                    <i class="bi bi-box-arrow-in-right"></i> Login to Your Account
-                </button>
-                <button class="btn btn-outline-primary w-100" onclick="showPage('register')">
-                    <i class="bi bi-person-plus"></i> Create New Account
-                </button>
-            </div>
-        </div>
-
-        <div id="loginSection" class="content-card hidden">
-            <h2><i class="bi bi-box-arrow-in-right"></i> User Login</h2>
-            <form onsubmit="event.preventDefault(); login();">
-                <div class="mb-3">
-                    <label for="login_email" class="form-label">
-                        <i class="bi bi-envelope"></i> Email Address
-                    </label>
-                    <input type="email" class="form-control" id="login_email" placeholder="Enter your email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="login_password" class="form-label">
-                        <i class="bi bi-lock"></i> Password
-                    </label>
-                    <input type="password" class="form-control" id="login_password" placeholder="Enter your password"
-                        required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-box-arrow-in-right"></i> Login
-                </button>
-            </form>
-        </div>
-
-        <div id="registerSection" class="content-card hidden">
-            <h2><i class="bi bi-person-plus"></i> User Registration</h2>
-            <form onsubmit="event.preventDefault(); register();">
-                <div class="mb-3">
-                    <label for="register_email" class="form-label">
-                        <i class="bi bi-envelope"></i> Email Address
-                    </label>
-                    <input type="email" class="form-control" id="register_email" placeholder="Enter your email"
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="register_name" class="form-label">
-                        <i class="bi bi-person"></i> Full Name
-                    </label>
-                    <input type="text" class="form-control" id="register_name" placeholder="Enter your full name"
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="register_password" class="form-label">
-                        <i class="bi bi-lock"></i> Password
-                    </label>
-                    <input type="password" class="form-control" id="register_password" placeholder="Create a password"
-                        required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-person-plus"></i> Register
-                </button>
-            </form>
-        </div>
-
-        <div id="accountSection" class="content-card hidden">
-            <h2><i class="bi bi-wallet2"></i> Create Bank Account</h2>
-            <form onsubmit="event.preventDefault(); createAccount();">
-                <div class="mb-3">
-                    <label for="acc_name" class="form-label">
-                        <i class="bi bi-person"></i> Full Name
-                    </label>
-                    <input type="text" class="form-control" id="acc_name" placeholder="Enter account holder name"
-                        required>
-                </div>
-                <div class="mb-3">
-                    <label for="acc_email" class="form-label">
-                        <i class="bi bi-envelope"></i> Email Address
-                    </label>
-                    <input type="email" class="form-control" id="acc_email" placeholder="Enter email address" required>
-                </div>
-                <div class="mb-3">
-                    <label for="acc_balance" class="form-label">
-                        <i class="bi bi-currency-dollar"></i> Initial Balance
-                    </label>
-                    <input type="number" class="form-control" id="acc_balance" min="0"
-                        placeholder="Enter initial deposit amount" required>
-                </div>
-                <div class="mb-3">
-                    <label for="acc_pin" class="form-label">
-                        <i class="bi bi-shield-lock"></i> Security PIN
-                    </label>
-                    <input type="password" class="form-control" id="acc_pin" minlength="4" maxlength="6"
-                        placeholder="Create 4-6 digit PIN" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-check-circle"></i> Create Account
-                </button>
-            </form>
-        </div>
-
-        <div id="detailsSection" class="content-card hidden">
-            <h2><i class="bi bi-card-list"></i> Account Details</h2>
-            <form onsubmit="event.preventDefault(); getAccount();">
-                <div class="mb-3">
-                    <label for="acc_number" class="form-label">
-                        <i class="bi bi-hash"></i> Account Number
-                    </label>
-                    <input type="number" class="form-control" id="acc_number" placeholder="Enter account number"
-                        required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> Get Details
-                </button>
-            </form>
-
-            <div id="accountDisplay" class="hidden">
-                <div class="account-card">
-                    <div class="card-header">
-                        <div class="card-logo">WB</div>
-                        <div class="card-brand">WizardBank</div>
-                    </div>
-
-                    <div class="card-number" id="disp_acc_number">#### #### #### ####</div>
-
-                    <div class="card-footer">
-                        <div>
-                            <div class="card-holder-label">Card Holder Name</div>
-                            <div class="card-holder-name" id="disp_name">NAME HERE</div>
-                        </div>
-                        <div>
-                            <i class="bi bi-credit-card" style="font-size: 2rem; color: var(--accent-gold);"></i>
+                        <div class="account-card-back">
+                            <div class="card-content-wrapper"
+                                style="justify-content: center; align-items: center; width: 100%;">
+                                <div class="mb-3 text-center">
+                                    <div class="card-holder-label">CVV Number</div>
+                                    <div class="card-number" style="font-size: 2rem; margin: 0;" id="disp_cvv">***</div>
+                                </div>
+                                <div class="mb-3 text-center">
+                                    <div class="card-holder-label">Expiry Date</div>
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-gold);"
+                                        id="disp_expiry">MM/YY</div>
+                                </div>
+                                <button class="flip-btn hide-btn" onclick="toggleCVV(event)"
+                                    style="z-index: 1000; position: relative;">Hide CVV</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1040,6 +934,11 @@
                 .catch(() => showAlert("Connection error. Please try again.", 'danger'));
         }
 
+        function toggleCVV(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('cardInner').classList.toggle('flipped');
+        }
+
         function getAccount() {
             const account_number = document.getElementById("acc_number").value;
 
@@ -1050,6 +949,8 @@
                     document.getElementById('disp_name').textContent = data.full_name;
                     document.getElementById('disp_balance').textContent = '$' + data.balance.toFixed(2);
                     document.getElementById('disp_email').textContent = data.email;
+                    document.getElementById('disp_cvv').textContent = data.cvv;
+                    document.getElementById('disp_expiry').textContent = data.expiryDate;
 
                     document.getElementById('accountDisplay').classList.remove('hidden');
                     showAlert("Account found successfully!", 'success');
