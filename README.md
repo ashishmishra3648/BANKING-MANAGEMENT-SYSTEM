@@ -6,7 +6,14 @@ WizardBank is a premium, full-stack Banking Management System built with **Sprin
 
 - **Modern UI/UX**: Professional emerald & gold dark theme with smooth animations.
 - **User Authentication**: Secure registration and login system.
-- **Account Management**: Create bank accounts with initial balances and security PINs.
+- **Advanced Account Creation**:
+    - **Unique 10-Digit Account Numbers**: Automatically generated and validated for uniqueness.
+    - **Secure CVV**: Unique 3-digit CVV generation for every card.
+    - **Auto-Expiry**: Cards are automatically valid for 5 years from creation.
+    - **Security PIN**: Enforced 4-6 digit numeric PINs.
+- **Interactive Digital Card**: 
+    - **3D Flip Effect**: View sensitive details (CVV, Expiry) with a realistic card flip animation.
+    - **Secure Visibility**: Toggle visibility of CVV/Expiry on demand.
 - **Real-time Account Tracking**: Instantly view account details, balance, and status using account numbers.
 - **Responsive Design**: Optimized for both desktop and mobile users.
 - **RESTful APIs**: Backend powered by Spring Boot for reliability and speed.
@@ -41,7 +48,7 @@ WizardBank is a premium, full-stack Banking Management System built with **Sprin
     ```
 
 2.  **Database Configuration**:
-    - Create a MySQL database named `banking_db`.
+    - Create a MySQL database named `banking_system`.
     - Update `src/main/resources/application.properties` with your MySQL username and password.
 
 3.  **Build and Run**:
@@ -50,7 +57,7 @@ WizardBank is a premium, full-stack Banking Management System built with **Sprin
     ```
 
 4.  **Access the App**:
-    Open `http://localhost:8080` in your browser.
+    Open `http://localhost:8081` in your browser.
 
 ## 📁 Repository Structure
 
